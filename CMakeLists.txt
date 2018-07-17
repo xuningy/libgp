@@ -24,11 +24,16 @@ FIND_PACKAGE(Eigen3 3.0.1 REQUIRED)
 INCLUDE_DIRECTORIES(SYSTEM ${EIGEN3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Expose libgp's public includes to other subprojects through cache variable.
+set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
+                                 ${EIGEN3_INCLUDE_DIR}
+    CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
+
 # ----- Add sources -----
 INCLUDE("Sources.cmake")
 
 # ----- Add library target -----
-ADD_LIBRARY(gp ${LIBGP_SRC} ${LIBGP_INTERFACES})
+ADD_LIBRARY(gp SHARED ${LIBGP_SRC} ${LIBGP_INTERFACES})
 
 # ----- Generate PKgconfig file ----
 get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
@@ -40,8 +45,8 @@ endif()
 set(INSTALL_LIB_DIR lib${LIBSUFFIX} CACHE PATH
     "Installation directory for libraries")
 mark_as_advanced(INSTALL_LIB_DIR)
-configure_file(${CMAKE_SOURCE_DIR}/contrib/libgp.pc.in 
-	${CMAKE_BINARY_DIR}/libgp.pc @ONLY)
+#configure_file(${CMAKE_SOURCE_DIR}/contrib/libgp.pc.in
+#	${CMAKE_BINARY_DIR}/libgp.pc @ONLY)
 
 # ----- Add example targets -----
 IF(BUILD_EXAMPLES)
